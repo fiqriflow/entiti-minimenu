@@ -1,0 +1,353 @@
+/* ========================================================================
+   ENTITI BADMINTON COMMUNITY — style.css
+   ========================================================================
+   DAFTAR ISI (cari komentar berikut untuk lompat ke bagian terkait):
+   1. VARIABEL WARNA & FONT
+   2. RESET DASAR
+   3. SPLASH SCREEN
+   4. PHONE FRAME (tampilan desktop)
+   5. ANIMASI ENTRANCE PER SECTION
+   6. HEADER
+   7. HERO
+   8. EVENT SECTION + SLIDER + LIGHTBOX
+   9. MENU / CTA BUTTONS
+   10. FOOTER
+   ======================================================================== */
+
+/* ------------------------------------------------------------------------
+   1. VARIABEL WARNA & FONT
+   Samain dengan tailwind.config.ts di project Next.js:
+   brandGreen #13B98F, brandDark #00533E
+   ------------------------------------------------------------------------ */
+:root{
+  --brand-green: #13B98F;
+  --brand-green-dark: #0e9c78;
+  --brand-dark: #00533E;
+  --color-header-bg: #1b1b1b;   /* header/footer nyaris hitam, sesuai referensi desain */
+  --color-bg: #ffffff;
+  --color-bg-soft: #f5f6f6;     /* background section Event */
+  --color-text: #1b1b1b;
+  --color-text-muted: #6b7280;
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --radius-lg: 20px;
+  --max-mobile-width: 390px;
+}
+
+/* ------------------------------------------------------------------------
+   2. RESET DASAR
+   ------------------------------------------------------------------------ */
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family: var(--font-display);
+  color: var(--color-text);
+  background:#e5e7eb; /* backdrop di belakang phone frame saat desktop */
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,p{ margin:0; }
+button{ font-family:inherit; cursor:pointer; }
+img{ max-width:100%; display:block; }
+
+/* Hormati preferensi user yang mematikan animasi di OS mereka */
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+
+/* ------------------------------------------------------------------------
+   3. SPLASH SCREEN — logo pop up + bouncing lalu fade out
+   ------------------------------------------------------------------------ */
+#splashScreen{
+  position:fixed; inset:0; z-index:9999;
+  background:#ffffff;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px;
+  transition: opacity .5s ease;
+}
+#splashScreen.splash-hide{ opacity:0; pointer-events:none; }
+
+.splash-logo-mark{
+  width:128px; height:128px;
+  /* animasi "pop up bouncing": scale dari 0 -> lewat 1.15 -> settle di 1 */
+  animation: popBounce .9s cubic-bezier(.34,1.56,.64,1) both;
+}
+.splash-wordmark{
+  font-weight:800; font-size:22px; letter-spacing:.5px; color:#1b1b1b;
+  opacity:0; animation: fadeUpIn .5s ease .5s forwards; /* muncul setelah logo */
+}
+.splash-subtext{
+  font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#8a8a8a;
+  opacity:0; animation: fadeUpIn .5s ease .65s forwards;
+}
+
+@keyframes popBounce{
+  0%   { transform: scale(0);    opacity:0; }
+  55%  { transform: scale(1.18); opacity:1; }
+  75%  { transform: scale(.92); }
+  100% { transform: scale(1); }
+}
+@keyframes fadeUpIn{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* ------------------------------------------------------------------------
+   4. PHONE FRAME — hanya aktif di layar lebar (desktop/tablet).
+   Di layar sempit (HP asli), tampil full width tanpa bezel.
+   ------------------------------------------------------------------------ */
+.device-frame{
+  width:100%;
+  background:var(--color-bg);
+}
+.device-screen{
+  width:100%;
+  background:var(--color-bg);
+}
+
+@media (min-width: 900px){
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+    /* backdrop halus di belakang frame, ganti sesuka hati */
+    background:
+      radial-gradient(circle at 20% 20%, #f0f0f0, transparent 40%),
+      radial-gradient(circle at 80% 80%, #e8e8e8, transparent 40%),
+      #dcdedd;
+  }
+  .device-frame{
+    width: calc(var(--max-mobile-width) + 28px);
+    height: 844px;
+    background:#111;
+    border-radius:48px;
+    padding:14px;
+    position:relative;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,.45), 0 0 0 2px #000;
+  }
+  /* notch di atas, mirip poni smartphone */
+  /* .device-frame::before{
+    content:'';
+    position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    width:120px; height:26px;
+    background:#111; border-radius:0 0 18px 18px;
+    z-index:5;
+  } */
+  /* home indicator di bawah */
+  .device-frame::after{
+    content:'';
+    position:absolute; bottom:9px; left:50%; transform:translateX(-50%);
+    width:120px; height:5px; border-radius:3px;
+    background:#3a3a3a; z-index:5;
+  }
+  .device-screen{
+    width:100%; height:100%;
+    border-radius:36px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; /* Firefox: sembunyikan scrollbar biar mirip HP asli */
+  }
+  .device-screen::-webkit-scrollbar{ display:none; } /* Chrome/Safari */
+
+  /* di desktop, tombol panah slider ditampilkan lagi karena tidak ada
+     swipe jari di sini — mouse drag tetap jalan juga sebagai alternatif */
+  .slider-btn{ display:flex; }
+}
+
+/* ------------------------------------------------------------------------
+   5. ANIMASI ENTRANCE PER SECTION (fade + slide up saat discroll)
+   Elemen dengan atribut [data-animate] mulai transparan & turun sedikit,
+   lalu script.js menambahkan class .is-visible saat elemen masuk viewport.
+   ------------------------------------------------------------------------ */
+[data-animate]{
+  opacity:0;
+  transform:translateY(28px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+[data-animate].is-visible{
+  opacity:1;
+  transform:translateY(0);
+}
+/* delay bertahap opsional, dipasang lewat atribut data-delay="1" / "2" dst */
+[data-animate][data-delay="1"]{ transition-delay:.1s; }
+[data-animate][data-delay="2"]{ transition-delay:.2s; }
+[data-animate][data-delay="3"]{ transition-delay:.3s; }
+
+/* ------------------------------------------------------------------------
+   6. HEADER
+   ------------------------------------------------------------------------ */
+.site-header{
+  background:var(--color-header-bg);
+  padding:16px 20px;
+  display:flex; align-items:center; justify-content:center;
+}
+.header-logo{ display:flex; align-items:center; gap:10px; }
+.header-logo-mark{ width:32px; height:32px; flex-shrink:0; }
+.header-logo-text{ line-height:1.1; text-align:left; }
+.header-logo-text .brand-name{
+  font-weight:800; font-size:15px; color:#fff; letter-spacing:.3px;
+}
+.header-logo-text .brand-sub{
+  font-size:8px; letter-spacing:1.5px; color:#b9b9b9; text-transform:uppercase;
+}
+
+/* ------------------------------------------------------------------------
+   7. HERO
+   ------------------------------------------------------------------------ */
+.hero{
+  padding:40px 24px 32px;
+  text-align:center;
+}
+.hero h1{
+  font-size:28px; font-weight:700; line-height:1.25; color:var(--color-text);
+}
+.hero h1 span{
+  display:block;
+  color:var(--brand-green);
+  font-weight:800;
+}
+
+/* ------------------------------------------------------------------------
+   8. EVENT SECTION + SLIDER + LIGHTBOX
+   ------------------------------------------------------------------------ */
+.section-event{
+  background:var(--color-bg-soft);
+  padding:36px 0 40px;
+}
+.section-event h2{
+  text-align:center; font-size:26px; font-weight:700; margin-bottom:20px;
+}
+
+.slider{
+  position:relative;
+  display:flex; align-items:center; gap:6px;
+}
+.slider-track-wrapper{
+  flex:1; overflow:hidden;
+}
+/* Track pakai native scroll + scroll-snap, jadi otomatis bisa
+   di-swipe pakai jari di HP, dan bisa di-drag pakai mouse (lihat script.js). */
+.slider-track{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+  padding:0 24px;
+  gap:14px;
+}
+.slider-track::-webkit-scrollbar{ display:none; }
+.slider-track.dragging{ cursor:grabbing; scroll-behavior:auto; }
+
+.slide{
+  flex:0 0 calc(100% - 48px);
+  scroll-snap-align:center;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  aspect-ratio: 3 / 4;
+  background:#ddd;
+}
+.slide img{
+  width:100%; height:100%; object-fit:cover;
+  cursor:zoom-in;
+  transition: transform .3s ease;
+}
+.slide img:hover{ transform:scale(1.03); }
+
+.slider-btn{
+  /* disembunyikan secara default (mobile asli): swipe jari sudah cukup,
+     tombol panah cuma ditampilkan lagi di desktop lewat media query di bawah */
+  display:flex;
+  flex-shrink:0;
+  width:34px; height:34px; border-radius:50%;
+  border:none; background:#fff; color:#1b1b1b;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  font-size:18px; align-items:center; justify-content:center;
+  z-index:2;
+}
+.slider-btn:hover{ background:var(--brand-green); color:#fff; }
+
+.slider-dots{
+  display:flex; justify-content:center; gap:6px; margin-top:14px;
+}
+.slider-dots .dot{
+  width:7px; height:7px; border-radius:50%;
+  background:#d1d5db; border:none; padding:0;
+  transition: background .25s ease, width .25s ease;
+}
+.slider-dots .dot.active{
+  background:var(--brand-green);
+  width:20px; border-radius:4px;
+}
+
+/* Lightbox: overlay full-screen untuk lihat foto lebih besar + download */
+.lightbox{
+  position:fixed; inset:0; z-index:10000;
+  background:rgba(0,0,0,.85);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease;
+  padding:24px;
+}
+.lightbox.is-open{ opacity:1; pointer-events:auto; }
+.lightbox-inner{
+  max-width:100%; max-height:100%;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+.lightbox-inner img{
+  max-width:100%; max-height:65vh;
+  border-radius:12px;
+  transform:scale(.92);
+  transition:transform .25s ease;
+}
+.lightbox.is-open .lightbox-inner img{ transform:scale(1); }
+.lightbox-close{
+  position:absolute; top:18px; right:18px;
+  width:38px; height:38px; border-radius:50%;
+  background:rgba(255,255,255,.15); color:#fff; border:none;
+  font-size:22px; line-height:1;
+}
+.lightbox-close:hover{ background:rgba(255,255,255,.3); }
+
+/* ------------------------------------------------------------------------
+   9. MENU / CTA BUTTONS
+   ------------------------------------------------------------------------ */
+.section-menu{ padding:36px 24px 40px; }
+.section-menu h2{ text-align:center; font-size:26px; font-weight:700; margin-bottom:20px; }
+
+.btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:15px 20px; margin-bottom:12px;
+  border-radius:14px; font-weight:600; font-size:15px;
+  text-decoration:none; border:2px solid transparent;
+  transition: transform .15s ease, background .2s ease;
+}
+.btn:active{ transform:scale(.98); }
+.btn-primary{ background:var(--brand-green); color:#fff; }
+.btn-primary:hover{ background:var(--brand-green-dark); }
+.btn-outline{ background:#fff; color:var(--color-text); border-color:#1b1b1b; }
+.btn-outline:hover{ background:#1b1b1b; color:#fff; }
+
+/* ------------------------------------------------------------------------
+   10. FOOTER
+   ------------------------------------------------------------------------ */
+.site-footer{
+  background:var(--color-header-bg);
+  color:#fff;
+  padding:28px 24px 24px;
+  text-align:center;
+}
+.footer-socials{
+  display:flex; justify-content:center; gap:16px; margin-bottom:18px;
+}
+.footer-socials a{
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff;
+}
+.footer-socials a:hover{ background:var(--brand-green); }
+.footer-divider{ border:none; border-top:1px solid rgba(255,255,255,.12); margin:0 0 16px; }
+.footer-copy{ font-size:11px; color:#9a9a9a; }

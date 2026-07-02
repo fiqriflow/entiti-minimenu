@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entiti Badminton Community</title>
+
+<!--
+  ======================================================================
+  ENTITI BADMINTON COMMUNITY — MENU PAGE
+  ======================================================================
+  Struktur file (dipisah sesuai pola project Next.js kamu):
+    index.html   -> file ini, cuma markup/struktur
+    style.css    -> semua styling (variabel warna, phone frame, animasi)
+    script.js    -> splash screen, slider, lightbox, GA4 helper
+    assets/      -> taruh semua foto event di sini
+
+  CARA GANTI ASET UTAMA:
+  - Logo: cari komentar "GANTI LOGO DI SINI" di bawah (ada 2: splash & header)
+  - Foto event / slide: taruh file baru di folder assets/, lalu edit
+    array EVENT_SLIDES di script.js (cari komentar "GANTI FOTO EVENT DI SINI")
+  - Link WA / Daftar Mabar / Lihat Kategori: cari komentar
+    "GANTI LINK TOMBOL DI SINI" di bawah
+  - GA4 Measurement ID: cari "G-XXXXXXXXXX" di bagian <head> ini
+  ======================================================================
+-->
+
+<!--
+  ======================================================================
+  GOOGLE ANALYTICS 4 (GA4) SETUP
+  ======================================================================
+  Ganti "G-XXXXXXXXXX" dengan Measurement ID GA4 milikmu (format G-XXXXXXX),
+  lalu hapus tanda komentar di bawah ini supaya aktif.
+  Kalau nanti halaman ini digabung ke project Next.js yang sudah pakai
+  GA4 + Vercel Analytics (helper trackCTAClick), cukup pakai helper yang
+  sudah ada di sana dan hapus fungsi trackCTAClick() di script.js.
+-->
+<!--
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX'); // page_view otomatis terkirim di sini
+</script>
+-->
+
+<!-- Font Outfit, sama seperti yang dipakai di landing page utama -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Semua styling ada di style.css -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==================================================================
+       SPLASH SCREEN (muncul duluan, hilang otomatis lewat script.js)
+       ================================================================== -->
+  <div id="splashScreen">
+    <!-- GANTI LOGO DI SINI: ganti isi <svg> ini dengan <img src="assets/logo.svg" ...>
+         kalau sudah ada file logo resmi -->
+    <img class="splash-logo-mark" src="assets/logo.svg">
+  </div>
+
+  <!-- ==================================================================
+       PHONE FRAME WRAPPER
+       Di HP asli, div ini tidak punya bezel (lihat CSS media query
+       di style.css). Di desktop, div ini jadi bingkai smartphone
+       seperti referensi desain kamu.
+       ================================================================== -->
+  <div class="device-frame">
+    <div class="device-screen">
+
+      <!-- HEADER -->
+      <header class="site-header">
+        <div class="header-logo">
+          <!-- GANTI LOGO DI SINI juga (versi kecil untuk header) -->
+          <img src="assets/logohorizontal.svg">
+        </div>
+      </header>
+
+      <!-- HERO -->
+      <section class="hero" data-animate>
+        <h1>Selamat Datang di<span>Entiti Badminton Community</span></h1>
+      </section>
+
+      <!-- EVENT SECTION -->
+      <section class="section-event" data-animate id="daftar-event">
+        <h2>Event</h2>
+        <div class="slider" id="eventSlider">
+          <button class="slider-btn prev" id="sliderPrev" aria-label="Sebelumnya">&#8249;</button>
+          <div class="slider-track-wrapper">
+            <!-- Slide-slide dibuat otomatis oleh script.js dari array
+                 EVENT_SLIDES (lihat komentar "GANTI FOTO EVENT DI SINI"
+                 di script.js) -->
+            <div class="slider-track" id="sliderTrack"></div>
+          </div>
+          <button class="slider-btn next" id="sliderNext" aria-label="Berikutnya">&#8250;</button>
+        </div>
+        <div class="slider-dots" id="sliderDots"></div>
+      </section>
+
+      <!-- MENU / CTA -->
+      <section class="section-menu" data-animate>
+        <h2>Menu</h2>
+        <!-- GANTI LINK TOMBOL DI SINI: ganti href="#" dengan link asli
+             (link WA Channel, halaman daftar mabar, halaman kategori) -->
+        <a href="https://forms.gle/5bZogs7YnF5hyape6" class="btn btn-outline" onclick="trackCTAClick('daftar_mabar')" target="_blank" rel="noopener noreferrer">Daftar Mabar</a>
+        <a href="https://whatsapp.com/channel/0029VbCDMFI5q08iB1iXAd1T" class="btn btn-primary" onclick="trackCTAClick('follow_wa_channel')" target="_blank" rel="noopener noreferrer">
+          <img src="assets/ic_baseline-whatsapp.svg">
+          Follow WA Channel Sekarang
+        </a>
+      </section>
+
+      
+
+      <!-- FOOTER -->
+      <footer class="site-footer" data-animate>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/entitibadminton" aria-label="Instagram" onclick="trackCTAClick('social_instagram')" target="_blank" rel="noopener noreferrer">
+            <img src="assets/mdi_instagram.svg">
+          </a>
+          <a href="https://www.tiktok.com/@entitibadminton" aria-label="TikTok" onclick="trackCTAClick('social_tiktok')" target="_blank" rel="noopener noreferrer">
+            <img src="assets/ic_baseline-tiktok.svg">
+          </a>
+        </div>
+        <hr class="footer-divider">
+        <p class="footer-copy">Entiti Badminton Community 2026. All Rights Reserved</p>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- LIGHTBOX (di luar device-frame supaya selalu full-screen) -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightbox-inner">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">&times;</button>
+      <img id="lightboxImg" src="" alt="">
+      <a id="lightboxDownload" class="btn btn-primary" download>
+        &#8681;&nbsp; Download Foto
+      </a>
+    </div>
+  </div>
+
+  <!-- Semua logic (splash, slider, lightbox, animasi, GA4 helper) ada di script.js -->
+  <script src="script.js"></script>
+</body>
+</html>
