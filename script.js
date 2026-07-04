@@ -48,7 +48,7 @@ var EVENT_SLIDES = [
   },
   {
     // Placeholder — ganti "src" dengan path foto event asli, mis. "assets/event-2.jpg"
-    src: "assets/event-1.jpg",
+    src: "assets/event-2.jpg",
     alt: "Placeholder slide event kedua",
     downloadName: "entiti-event-2.jpg"
   }
